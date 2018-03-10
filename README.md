@@ -4,7 +4,7 @@ The goal here is to build a JavaScript class called FQL that will be a pure Java
 
 ## Getting started
 
-Fork and clone this repo, then `npm install`.
+Fork and clone this repo, then `npm install`. *Note: if `npm install` fails due to a tripwire python version issue, delete your node modules (`rm -rf node_modules`) and try installing again with the python version set to 2.7: `npm install --python=python2.7`*.
 
 Run the tests with `npm test`. This should open (in a web browser) an auto-reloading html file that reports on the specs passing / failing. If you have any `console.log`s in your source code, they'll show up in the terminal where you ran `npm test` and also in the browser at the top of the document (under the header for **Console Output**) but *not* in the browser console.
 
