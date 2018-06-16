@@ -22,6 +22,7 @@ class Table {
     } catch (err) {
       // console.error(err);
     }
+    // if (!fs.existsSync(filePath)) return;
   }
 
   getRowIds () {
