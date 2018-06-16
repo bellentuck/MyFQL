@@ -40,6 +40,34 @@ class Plan {
     }
     return true;
   }
+
+  getInitialRowIds (table) {
+    if (!this._criteria) return table.getRowIds();
+    // (1) split criteria
+    const indexedCriteria = {};
+    const nonIndexedCriteria = {};
+    for (const column in this._criteria) {
+      if (table.hasIndexTable(column)) {
+        indexedCriteria[column] = this._criteria[column];
+      } else {
+        nonIndexedCriteria[column] = this._criteria[column];
+      }
+    }
+    if (Object.keys(indexedCriteria).length === 0) {
+      return table.getRowIds();
+    }
+    this._criteria = nonIndexedCriteria;
+    // (2) find initial ids based off idx table and indexed criteria
+    return Object.keys(indexedCriteria)
+      .map(column => {
+        const indexTable = table.getIndexTable(column);
+        const indexKey = indexedCriteria[column]; // e.g. 1972
+        return indexTable[indexKey];
+      })
+      .reduce((intersection, nextRowIds) => {
+        return intersection.filter(id => nextRowIds.includes(id));
+      });
+  }
 }
 
 module.exports = Plan;

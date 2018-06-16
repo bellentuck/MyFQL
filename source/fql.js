@@ -7,7 +7,21 @@ class FQL {
   }
 
   get () {
-    const rowIds = this._table.getRowIds();
+    // only for 1 indexed field for now
+
+    // this can be abstracted to this._plan.getInitialRowIds(table)
+    // let rowIds;
+    // if (
+    //   this._plan._criteria &&
+    //   Object.keys(this._plan._criteria).length === 1 &&
+    //   this._table.hasIndexTable(Object.keys(this._plan._criteria)[0])
+    // ) {
+    //   rowIds = this._table._indexTables[Object.keys(this._plan._criteria)[0]][Object.values(this._plan._criteria)[0]];
+    // } else {
+    //   rowIds = this._table.getRowIds();
+    // }
+    const rowIds = this._plan.getInitialRowIds(this._table);
+
     const results = [];
     const iterCondition = this._plan._limit
       ? () => this._plan.withinLimit(results)
