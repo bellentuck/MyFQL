@@ -19,12 +19,13 @@ class Table {
   read (id) {
     const filePath = path.join(this._folderPath, Table.toFilename(id));
     try {
-      const fileContents = fs.readFileSync(filePath);
+      const fileContents = fs.readFileSync(filePath); // how might we stream this?
       return JSON.parse(fileContents);
     } catch (err) {
       // console.error(err);
+      return undefined;
     }
-    // if (!fs.existsSync(filePath)) return;
+    // Alternately: if (!fs.existsSync(filePath)) return;
   }
 
   getRowIds () {
@@ -36,7 +37,7 @@ class Table {
     return this._indexTables.hasOwnProperty(column);
   }
   addIndexTable (column) {
-    const data = new FQL(this).get(); // would be cool if we could stream this instead -> or this.getRowIds()
+    const data = new FQL(this).get();
     this._indexTables[column] = data.reduce((idxTable, dataRow) => {
       if (!idxTable.hasOwnProperty(dataRow[column])) {
         idxTable[dataRow[column]] = [dataRow.id];

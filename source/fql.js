@@ -7,27 +7,27 @@ class FQL {
   }
 
   get () {
-    // only for 1 indexed field for now
-
-    // this can be abstracted to this._plan.getInitialRowIds(table)
-    // let rowIds;
-    // if (
-    //   this._plan._criteria &&
-    //   Object.keys(this._plan._criteria).length === 1 &&
-    //   this._table.hasIndexTable(Object.keys(this._plan._criteria)[0])
-    // ) {
-    //   rowIds = this._table._indexTables[Object.keys(this._plan._criteria)[0]][Object.values(this._plan._criteria)[0]];
-    // } else {
-    //   rowIds = this._table.getRowIds();
-    // }
     const rowIds = this._plan.getInitialRowIds(this._table);
 
     const results = [];
     const iterCondition = this._plan._limit
       ? () => this._plan.withinLimit(results)
       : () => rowIds.length;
+
     while (iterCondition()) {
       let row = this._table.read(rowIds.shift());
+
+      // 'join' clauses:
+      if (this._plan._joinData.length) {
+        for (const joinRow of this._plan._joinData) {
+          if (this._plan._joinCallback(joinRow, row)) {
+            results.push(FQL.merge(joinRow, row));
+          }
+        }
+        continue;
+      }
+
+      // 'where' clauses:
       if (
         this._plan._criteria &&
         !Object.keys(this._plan._criteria).every(col => {
@@ -38,8 +38,11 @@ class FQL {
           }
         })
       ) continue;
+
+      // 'select' clauses:
       results.push(this._plan.selectColumns(row));
     }
+
     return results;
   }
 
@@ -74,10 +77,11 @@ class FQL {
     return Object.assign({}, ...keyValPairs);
   }
 
-  // innerJoin (joinedQuery, callback) {
-  //   console.log('Q', joinedQuery);
-  //   //merge(this, joinedQuery);
-  // }
+  innerJoin (joinedQuery, callback) {
+    joinedQuery._plan.setJoinData(this.get(), callback);
+    return joinedQuery;
+
+  }
 }
 
 module.exports = FQL;

@@ -353,7 +353,7 @@ describe("Part II: query me this", function () {
       expect(merged).to.eql({a: 100, b: 2, c: 3});
     });
 
-    xit("queries can inner join other queries given a matching condition for the self and foreign row", function () {
+    it("queries can inner join other queries given a matching condition for the self and foreign row", function () {
       // make sure `where` is working properly before attempting
       expect(FQL.prototype.innerJoin).to.be.a('function');
       const result = movieQuery

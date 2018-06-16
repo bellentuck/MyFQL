@@ -3,6 +3,8 @@ class Plan {
     this._limit = null;
     this._selected = null;
     this._criteria = null;
+    this._joinData = [];
+    this._joinCallback = null;
   }
 
   setLimit (limit) {
@@ -29,14 +31,20 @@ class Plan {
     this._criteria = criteria;
   }
 
+  setJoinData (data, callback) {
+    this._joinData = this._joinData.concat(data);
+    this._joinCallback = callback;
+  }
+
   matchesRow (row) {
     if (!this._criteria) return true;
     for (let column in this._criteria) {
+      if (!this._criteria.hasOwnProperty(column)) continue;
       const condition = this._criteria[column];
-      if (typeof condition === 'function') {
-        if (!condition(row[column])) return false;
-      }
-      if (condition !== row[column]) return false;
+      if (
+        (typeof condition === 'function' && !condition(row[column]))
+        || condition !== row[column]
+      ) return false;
     }
     return true;
   }
